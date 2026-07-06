@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poholing PLC | Personal Banking</title>
+<style>
+  :root{
+    --navy: #0d1b3e;
+    --blue: #1b4fd8;
+    --blue-dark: #163fb0;
+    --bg-light: #eef2fb;
+    --card-bg: #ffffff;
+    --text-dark: #1a1f36;
+    --text-gray: #6b7280;
+    --border-light: #e5e9f2;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-dark);
+    background: var(--bg-light);
+  }
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+
+  /* Top utility bar */
+  .top-bar{
+    background: var(--navy);
+    color: #cfd6e8;
+    font-size: 13px;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    padding: 10px 40px;
+  }
+  .top-bar .top-left a{
+    margin-right: 28px;
+    color: #cfd6e8;
+    font-weight: 500;
+  }
+  .top-bar .top-left a:first-child{color:#ffffff;}
+  .top-bar .top-right{display:flex;align-items:center;gap:24px;}
+  .top-bar .top-right span{display:flex;align-items:center;gap:6px;}
+  .icon-small{width:14px;height:14px;display:inline-block;}
+
+  /* Main nav */
+  .main-nav{
+    background: #ffffff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 14px 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: 0.5px;
+  }
+  .logo .plc-tag{
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-gray);
+    letter-spacing: 1px;
+    align-self:flex-end;
+    margin-bottom: 3px;
+  }
+  .logo-mark{
+    width: 34px;
+    height: 34px;
+  }
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap: 32px;
+  }
+  .nav-links li{
+    font-size: 15px;
+    font-weight: 500;
+    color: #23283a;
+    display:flex;
+    align-items:center;
+    gap: 4px;
+    cursor:pointer;
+  }
+  .nav-right{
+    display:flex;
+    align-items:center;
+    gap: 20px;
+  }
+  .search-icon{
+    width: 20px;height:20px;
+    color:#23283a;
+    cursor:pointer;
+  }
+  .login-btn{
+    background: var(--blue);
+    color:#fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border:none;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .menu-toggle{
+    display:none;
+    background:none;
+    border:none;
+    padding:4px;
+    cursor:pointer;
+    color: var(--navy);
+  }
+  .menu-toggle svg{width:24px;height:24px;}
+  .mobile-menu{display:none;}
+
+  /* Hero */
+  .hero{
+    position:relative;
+    display:flex;
+    background: linear-gradient(180deg, #dbe4f7 0%, #cddaf3 100%);
+    overflow:hidden;
+    min-height: 380px;
+  }
+  .hero-text{
+    flex: 0 0 46%;
+    padding: 70px 40px 70px 40px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    z-index:2;
+  }
+  .hero-text h1{
+    font-size: 44px;
+    line-height: 1.15;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+  .hero-text p{
+    font-size: 16px;
+    color: #45506b;
+    max-width: 460px;
+    margin-bottom: 30px;
+    line-height: 1.5;
+  }
+  .hero-ctas{display:flex;align-items:center;gap:28px;}
+  .btn-primary{
+    background: var(--blue);
+    color:#fff;
+    padding: 14px 26px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    border:none;
+    cursor:pointer;
+  }
+  .btn-link{
+    color: var(--blue);
+    font-weight: 600;
+    font-size: 15px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .hero-image{
+    flex: 1;
+    position:relative;
+    min-height: 380px;
+    background-image:
+      linear-gradient(120deg, rgba(9,20,50,0.55) 0%, rgba(14,35,80,0.25) 45%, rgba(20,50,100,0.15) 100%),
+      url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80');
+    background-size: cover;
+    background-position: center;
+    overflow:hidden;
+  }
+  .hero-brand{
+    position:absolute;
+    top: 44%;
+    left: 50%;
+    transform: translate(-50%,-50%) rotate(-3deg);
+    color:#fff;
+    font-size: 30px;
+    font-weight:700;
+    letter-spacing:1px;
+    opacity:0.92;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  }
+  .hero-brand svg{
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+  }
+  .hero-brand .sub{
+    font-size:12px;
+    font-weight:400;
+    letter-spacing:3px;
+    opacity:0.75;
+  }
+
+  /* Feature strip */
+  .feature-strip-wrap{
+    position:relative;
+    padding: 0 40px;
+    margin-top: -40px;
+    z-index: 3;
+  }
+  .feature-strip{
+    background:#fff;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(20,30,70,0.08);
+    display:flex;
+    padding: 26px 10px;
+  }
+  .feature-item{
+    flex:1;
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    padding: 0 24px;
+    border-right: 1px solid var(--border-light);
+  }
+  .feature-item:last-child{border-right:none;}
+  .feature-icon{
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #eaf0fe;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .feature-icon svg{width:20px;height:20px;stroke: var(--blue);}
+  .feature-item h4{
+    font-size: 15px;
+    font-weight:700;
+    margin-bottom:4px;
+    color: var(--text-dark);
+  }
+  .feature-item p{
+    font-size: 13px;
+    color: var(--text-gray);
+    line-height:1.4;
+  }
+
+  /* Main content section */
+  .content-section{
+    display:flex;
+    gap: 30px;
+    padding: 50px 40px 70px;
+    max-width: 1500px;
+    margin: 0 auto;
+    align-items:flex-start;
+  }
+  .products-col{flex: 1;}
+  .products-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom: 24px;
+  }
+  .products-header h2{
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--navy);
+  }
+  .view-all{
+    color: var(--blue);
+    font-weight:600;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .product-grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .product-card{
+    background:#fff;
+    border-radius: 12px;
+    padding: 24px 20px;
+    border: 1px solid var(--border-light);
+  }
+  .product-icon{
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #eaf0fe;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom: 16px;
+  }
+  .product-icon svg{width:22px;height:22px;stroke:var(--blue);}
+  .product-card h3{
+    font-size: 16px;
+    font-weight:700;
+    margin-bottom: 8px;
+  }
+  .product-card p{
+    font-size: 13px;
+    color: var(--text-gray);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .product-card a{
+    font-size: 13px;
+    font-weight:700;
+    color: var(--blue);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  /* Online banking card */
+  .banking-col{
+    flex: 0 0 300px;
+    background: var(--navy);
+    border-radius: 14px;
+    padding: 30px 26px;
+    color:#fff;
+    align-self:stretch;
+  }
+  .banking-col h3{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size: 18px;
+    font-weight:700;
+    margin-bottom: 22px;
+  }
+  .banking-col h3 svg{width:18px;height:18px;}
+  .input-group{
+    position:relative;
+    margin-bottom: 14px;
+  }
+  .input-group svg{
+    position:absolute;
+    left: 14px;
+    top: 50%;
+    transform:translateY(-50%);
+    width:16px;height:16px;
+    stroke:#8b96b8;
+  }
+  .input-group input{
+    width:100%;
+    padding: 12px 14px 12px 40px;
+    border-radius: 6px;
+    border:none;
+    background: #16214a;
+    color:#fff;
+    font-size: 14px;
+    outline:none;
+  }
+  .input-group input::placeholder{color:#8b96b8;}
+  .input-group .eye{
+    left:auto;
+    right:14px;
+  }
+  .remember-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size: 13px;
+    color: #c7cfe6;
+    margin-bottom: 20px;
+  }
+  .remember-row label{display:flex;align-items:center;gap:8px;cursor:pointer;}
+  .remember-row a{color:#c7cfe6;text-decoration:none;}
+  .btn-login-full{
+    width:100%;
+    background: var(--blue);
+    color:#fff;
+    border:none;
+    padding: 13px;
+    border-radius: 6px;
+    font-weight:700;
+    font-size: 15px;
+    cursor:pointer;
+    margin-bottom: 18px;
+  }
+  .new-user{
+    text-align:center;
+    font-size: 13px;
+    color:#c7cfe6;
+    margin-bottom: 12px;
+  }
+  .btn-register{
+    width:100%;
+    background: transparent;
+    color:#fff;
+    border: 1px solid #3b4a78;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight:700;
+    font-size: 14px;
+    cursor:pointer;
+  }
+
+  /* Footer trust bar */
+  .trust-bar{
+    background: var(--navy);
+    color:#c7cfe6;
+    display:flex;
+    justify-content:center;
+    gap: 60px;
+    padding: 20px 40px;
+    font-size: 13px;
+    flex-wrap:wrap;
+  }
+  .trust-bar span{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .trust-bar svg{width:16px;height:16px;}
+
+  /* Tablet */
+  @media (max-width: 1100px){
+    .content-section{flex-direction:column;}
+    .banking-col{flex:1;width:100%;}
+    .product-grid{grid-template-columns: repeat(2,1fr);}
+    .feature-strip{flex-wrap:wrap;}
+    .feature-item{flex:0 0 50%;border-right:none;padding:10px 20px;margin-bottom:10px;}
+    .nav-links{gap:20px;}
+    .hero-text h1{font-size:38px;}
+  }
+  @media (max-width: 900px){
+    .nav-links{display:none;}
+    .menu-toggle{display:block;}
+    .mobile-menu.open{
+      display:flex;
+      flex-direction:column;
+      background:#fff;
+      padding: 10px 20px 18px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      gap:0;
+    }
+    .mobile-menu.open li{
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size:15px;
+    }
+    .mobile-menu.open li:last-child{border-bottom:none;}
+  }
+  /* Mobile */
+  @media (max-width: 700px){
+    .top-bar{padding:8px 16px;flex-wrap:wrap;gap:8px;}
+    .top-bar .top-left a{margin-right:16px;font-size:12px;}
+    .top-bar .top-right{gap:14px;flex-wrap:wrap;}
+    .top-bar .top-right span{font-size:12px;}
+
+    .main-nav{padding:12px 16px;}
+    .logo{font-size:18px;}
+    .logo-mark{width:28px;height:28px;}
+    .login-btn{padding:8px 14px;font-size:13px;}
+    .login-btn span{display:none;}
+
+    .hero{flex-direction:column;min-height:auto;}
+    .hero-text{flex:1;padding: 32px 20px 24px;order:1;}
+    .hero-text h1{font-size:28px;}
+    .hero-text p{font-size:14px;}
+    .hero-ctas{flex-wrap:wrap;gap:16px;}
+    .btn-primary{width:100%;text-align:center;padding:14px;}
+    .btn-link{width:100%;justify-content:center;}
+    .hero-image{min-height:200px;order:2;}
+    .hero-brand{font-size:20px;}
+    .hero-brand svg{width:24px;height:24px;}
+
+    .feature-strip-wrap{padding:0 16px;margin-top:-24px;}
+    .feature-strip{border-radius:10px;padding:16px 8px;}
+    .feature-item{flex:0 0 100%;padding:10px 12px;}
+
+    .content-section{padding:32px 16px 50px;gap:20px;}
+    .products-header h2{font-size:20px;}
+    .product-grid{grid-template-columns: 1fr;gap:14px;}
+    .banking-col{padding:24px 20px;}
+
+    .trust-bar{gap:16px;flex-direction:column;align-items:flex-start;padding:20px 16px;}
+  }
+  @media (max-width: 380px){
+    .hero-text h1{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- Top utility bar -->
+  <div class="top-bar">
+    <div class="top-left">
+      <a href="#">Personal</a>
+      <a href="#">Business</a>
+      <a href="#">About Us</a>
+      <a href="#">Investor Relations</a>
+    </div>
+    <div class="top-right">
+      <span>
+        <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        Find Branches
+      </span>
+      <span>
+        <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+        Help &amp; Support
+      </span>
+      <span>
+        <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        +44 20 7946 0580
+      </span>
+    </div>
+  </div>
+
+  <!-- Main nav -->
+  <nav class="main-nav">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="none">
+        <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="#1b4fd8"/>
+        <polygon points="20,9 29,14.5 29,25.5 20,31 11,25.5 11,14.5" fill="#0d1b3e"/>
+      </svg>
+      POHOLING <span class="plc-tag">PLC</span>
+    </div>
+    <ul class="nav-links">
+      <li>Accounts ▾</li>
+      <li>Loans ▾</li>
+      <li>Cards ▾</li>
+      <li>Investments ▾</li>
+      <li>Digital Banking ▾</li>
+      <li>More ▾</li>
+    </ul>
+    <div class="nav-right">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <button class="login-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span>Login</span>
+      </button>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </nav>
+  <ul class="nav-links mobile-menu" id="mobileMenu">
+    <li>Accounts ▾</li>
+    <li>Loans ▾</li>
+    <li>Cards ▾</li>
+    <li>Investments ▾</li>
+    <li>Digital Banking ▾</li>
+    <li>More ▾</li>
+  </ul>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Banking that moves<br>with you, always.</h1>
+      <p>Experience secure, convenient and innovative banking designed for your everyday and your future.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary">Open an Account</button>
+        <a href="#" class="btn-link">Learn More →</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="hero-brand">
+        <svg viewBox="0 0 40 40" fill="none">
+          <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="#ffffff"/>
+          <polygon points="20,9 29,14.5 29,25.5 20,31 11,25.5 11,14.5" fill="#0d1b3e"/>
+        </svg>
+        <div>
+          POHOLING<br>
+          <span class="sub">PLC</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature strip -->
+  <div class="feature-strip-wrap">
+    <div class="feature-strip">
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+        </div>
+        <div>
+          <h4>Secure Banking</h4>
+          <p>Your security is our priority</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        </div>
+        <div>
+          <h4>Bank Anywhere</h4>
+          <p>Access your account 24/7 on any device</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div>
+          <h4>Fast &amp; Easy</h4>
+          <p>Quick transfers and instant payments</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-8h3z"/><path d="M3 19a2 2 0 0 0 2 2h1v-8H3z"/></svg>
+        </div>
+        <div>
+          <h4>24/7 Support</h4>
+          <p>We're here to help you anytime</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <section class="content-section">
+    <div class="products-col">
+      <div class="products-header">
+        <h2>Banking Solutions for You</h2>
+        <a href="#" class="view-all">View All Products →</a>
+      </div>
+      <div class="product-grid">
+        <div class="product-card">
+          <div class="product-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2H10a2 2 0 0 0-2 2v2"/></svg>
+          </div>
+          <h3>Savings Accounts</h3>
+          <p>Build your savings with competitive interest rates and flexible options.</p>
+          <a href="#">Learn More →</a>
+        </div>
+        <div class="product-card">
+          <div class="product-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+          </div>
+          <h3>Home Loans</h3>
+          <p>Make your dream home a reality with our flexible home loan options.</p>
+          <a href="#">Learn More →</a>
+        </div>
+        <div class="product-card">
+          <div class="product-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <h3>Credit Cards</h3>
+          <p>Enjoy rewards, cashback and exclusive benefits with our cards.</p>
+          <a href="#">Learn More →</a>
+        </div>
+        <div class="product-card">
+          <div class="product-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg>
+          </div>
+          <h3>Investments</h3>
+          <p>Grow your wealth with our investment solutions tailored for you.</p>
+          <a href="#">Learn More →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="banking-col">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Online Banking
+      </h3>
+      <div class="input-group">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        <input type="text" placeholder="Username">
+      </div>
+      <div class="input-group">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <input type="password" placeholder="Password">
+        <svg class="eye" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <div class="remember-row">
+        <label><input type="checkbox" checked style="width:auto;"> Remember Me</label>
+        <a href="#">Forgot Password?</a>
+      </div>
+      <button class="btn-login-full">Login</button>
+      <div class="new-user">New to Poholing PLC?</div>
+      <button class="btn-register">Register Now</button>
+    </div>
+  </section>
+
+  <!-- Trust bar -->
+  <div class="trust-bar">
+    <span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+      Your security is our priority
+    </span>
+    <span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><circle cx="17" cy="7" r="3"/></svg>
+      Trusted by millions
+    </span>
+    <span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 4h3a3 3 0 0 1-3 3"/><path d="M7 4H4a3 3 0 0 0 3 3"/></svg>
+      Award-winning digital banking
+    </span>
+    <span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+      Regulated by the Financial Conduct Authority
+    </span>
+  </div>
+
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
