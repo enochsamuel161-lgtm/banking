@@ -110,7 +110,18 @@
     gap:8px;
     border:none;
     cursor:pointer;
+    white-space:nowrap;
   }
+  .menu-toggle{
+    display:none;
+    background:none;
+    border:none;
+    padding:4px;
+    cursor:pointer;
+    color: var(--navy);
+  }
+  .menu-toggle svg{width:24px;height:24px;}
+  .mobile-menu{display:none;}
 
   /* Hero */
   .hero{
@@ -164,41 +175,39 @@
   .hero-image{
     flex: 1;
     position:relative;
-    background: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80') center/cover;
+    min-height: 380px;
+    background-image:
+      linear-gradient(120deg, rgba(9,20,50,0.55) 0%, rgba(14,35,80,0.25) 45%, rgba(20,50,100,0.15) 100%),
+      url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80');
+    background-size: cover;
+    background-position: center;
     overflow:hidden;
-  }
-  .hero-image::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background: linear-gradient(120deg, #0e2350 0%, #16305e 40%, #1c3d70 100%);
-  }
-  .building-graphic{
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
   }
   .hero-brand{
     position:absolute;
-    top: 45%;
+    top: 44%;
     left: 50%;
-    transform: translate(-50%,-50%) rotate(-4deg);
+    transform: translate(-50%,-50%) rotate(-3deg);
     color:#fff;
-    font-size: 28px;
+    font-size: 30px;
     font-weight:700;
     letter-spacing:1px;
-    opacity:0.9;
+    opacity:0.92;
     display:flex;
     align-items:baseline;
-    gap:8px;
+    gap:10px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  }
+  .hero-brand svg{
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
   }
   .hero-brand .sub{
     font-size:12px;
     font-weight:400;
     letter-spacing:3px;
-    opacity:0.7;
+    opacity:0.75;
   }
 
   /* Feature strip */
@@ -421,60 +430,72 @@
   }
   .trust-bar svg{width:16px;height:16px;}
 
+  /* Tablet */
   @media (max-width: 1100px){
     .content-section{flex-direction:column;}
     .banking-col{flex:1;width:100%;}
     .product-grid{grid-template-columns: repeat(2,1fr);}
     .feature-strip{flex-wrap:wrap;}
-    .feature-item{flex:0 0 50%;border-right:none;margin-bottom:16px;}
+    .feature-item{flex:0 0 50%;border-right:none;padding:10px 20px;margin-bottom:10px;}
+    .nav-links{gap:20px;}
+    .hero-text h1{font-size:38px;}
   }
-  @media (max-width: 700px){
-    .hero{flex-direction:column;}
-    .hero-text{flex:1;padding: 40px 24px;}
-    .hero-text h1{font-size:32px;}
-    .hero-image{min-height:220px;}
-    .top-bar{padding:8px 20px;}
-    .main-nav{padding:14px 20px;flex-wrap:wrap;gap:12px;}
+  @media (max-width: 900px){
     .nav-links{display:none;}
-    .content-section{padding:40px 20px;}
-    .product-grid{grid-template-columns: 1fr;}
-    .trust-bar{gap:20px;justify-content:flex-start;}
+    .menu-toggle{display:block;}
+    .mobile-menu.open{
+      display:flex;
+      flex-direction:column;
+      background:#fff;
+      padding: 10px 20px 18px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      gap:0;
+    }
+    .mobile-menu.open li{
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size:15px;
+    }
+    .mobile-menu.open li:last-child{border-bottom:none;}
   }
+  /* Mobile */
+  @media (max-width: 700px){
+    .top-bar{padding:8px 16px;flex-wrap:wrap;gap:8px;}
+    .top-bar .top-left a{margin-right:16px;font-size:12px;}
+    .top-bar .top-right{gap:14px;flex-wrap:wrap;}
+    .top-bar .top-right span{font-size:12px;}
 
-html{scroll-behavior:smooth;}
-.hero,.feature-strip,.product-card,.banking-col,.trust-bar{
-animation:fadeUp .7s ease both;
-}
-.product-card{transition:transform .3s ease,box-shadow .3s ease;}
-.product-card:hover{transform:translateY(-6px);box-shadow:0 12px 24px rgba(0,0,0,.12);}
-.login-btn,.btn-primary,.btn-login-full,.btn-register{
-transition:transform .25s ease,opacity .25s ease;
-}
-.login-btn:hover,.btn-primary:hover,.btn-login-full:hover,.btn-register:hover{
-transform:translateY(-2px);
-}
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(24px);}
-to{opacity:1;transform:translateY(0);}
-}
+    .main-nav{padding:12px 16px;}
+    .logo{font-size:18px;}
+    .logo-mark{width:28px;height:28px;}
+    .login-btn{padding:8px 14px;font-size:13px;}
+    .login-btn span{display:none;}
 
+    .hero{flex-direction:column;min-height:auto;}
+    .hero-text{flex:1;padding: 32px 20px 24px;order:1;}
+    .hero-text h1{font-size:28px;}
+    .hero-text p{font-size:14px;}
+    .hero-ctas{flex-wrap:wrap;gap:16px;}
+    .btn-primary{width:100%;text-align:center;padding:14px;}
+    .btn-link{width:100%;justify-content:center;}
+    .hero-image{min-height:200px;order:2;}
+    .hero-brand{font-size:20px;}
+    .hero-brand svg{width:24px;height:24px;}
 
-@media (max-width:700px){
-.top-bar{display:block;padding:10px 16px;}
-.top-bar .top-left,.top-bar .top-right{display:flex;flex-wrap:wrap;gap:10px;}
-.main-nav{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;}
-.nav-right{width:100%;justify-content:flex-end;}
-.login-btn{width:100%;justify-content:center;margin-top:10px;}
-.hero-text,.content-section{padding-left:16px;padding-right:16px;}
-.hero-ctas{flex-direction:column;align-items:stretch;}
-.btn-primary,.btn-link{width:100%;text-align:center;justify-content:center;}
-.feature-strip{display:block;}
-.feature-item{width:100%;padding:14px 0;border-bottom:1px solid var(--border-light);}
-.feature-item:last-child{border-bottom:none;}
-.products-header{flex-direction:column;align-items:flex-start;gap:10px;}
-.banking-col{width:100%;}
-}
+    .feature-strip-wrap{padding:0 16px;margin-top:-24px;}
+    .feature-strip{border-radius:10px;padding:16px 8px;}
+    .feature-item{flex:0 0 100%;padding:10px 12px;}
 
+    .content-section{padding:32px 16px 50px;gap:20px;}
+    .products-header h2{font-size:20px;}
+    .product-grid{grid-template-columns: 1fr;gap:14px;}
+    .banking-col{padding:24px 20px;}
+
+    .trust-bar{gap:16px;flex-direction:column;align-items:flex-start;padding:20px 16px;}
+  }
+  @media (max-width: 380px){
+    .hero-text h1{font-size:24px;}
+  }
 </style>
 </head>
 <body>
@@ -522,12 +543,23 @@ to{opacity:1;transform:translateY(0);}
     </ul>
     <div class="nav-right">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <button class="login-btn" onclick="document.querySelector('.banking-col').scrollIntoView({behavior:'smooth'});">
+      <button class="login-btn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-        Login
+        <span>Login</span>
+      </button>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>
   </nav>
+  <ul class="nav-links mobile-menu" id="mobileMenu">
+    <li>Accounts ▾</li>
+    <li>Loans ▾</li>
+    <li>Cards ▾</li>
+    <li>Investments ▾</li>
+    <li>Digital Banking ▾</li>
+    <li>More ▾</li>
+  </ul>
 
   <!-- Hero -->
   <section class="hero">
@@ -541,7 +573,10 @@ to{opacity:1;transform:translateY(0);}
     </div>
     <div class="hero-image">
       <div class="hero-brand">
-        <span>P</span>
+        <svg viewBox="0 0 40 40" fill="none">
+          <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="#ffffff"/>
+          <polygon points="20,9 29,14.5 29,25.5 20,31 11,25.5 11,14.5" fill="#0d1b3e"/>
+        </svg>
         <div>
           POHOLING<br>
           <span class="sub">PLC</span>
@@ -653,7 +688,7 @@ to{opacity:1;transform:translateY(0);}
         <label><input type="checkbox" checked style="width:auto;"> Remember Me</label>
         <a href="#">Forgot Password?</a>
       </div>
-      <button class="btn-login-full" onclick="login()">Login</button>
+      <button class="btn-login-full">Login</button>
       <div class="new-user">New to Poholing PLC?</div>
       <button class="btn-register">Register Now</button>
     </div>
@@ -679,14 +714,12 @@ to{opacity:1;transform:translateY(0);}
     </span>
   </div>
 
-
-<script>
-function login(){
- const username=document.querySelector('.banking-col input[type="text"]').value.trim();
- const password=document.querySelector('.banking-col input[type="password"]').value.trim();
- if(username===""||password===""){alert("Please enter your username and password.");return;}
- alert("Login successful!");
-}
-</script>
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+    });
+  </script>
 </body>
 </html>
