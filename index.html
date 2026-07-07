@@ -16,10 +16,12 @@
     --border-light: #e5e9f2;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
   body{
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--text-dark);
     background: var(--bg-light);
+    overflow-x:hidden;
   }
   a{text-decoration:none;color:inherit;}
   ul{list-style:none;}
@@ -52,6 +54,14 @@
     justify-content:space-between;
     padding: 14px 40px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: box-shadow .3s ease, padding .3s ease;
+  }
+  .main-nav.scrolled{
+    box-shadow: 0 6px 20px rgba(13,27,62,0.12);
+    padding: 10px 40px;
   }
   .logo{
     display:flex;
@@ -73,7 +83,9 @@
   .logo-mark{
     width: 34px;
     height: 34px;
+    transition: transform .4s ease;
   }
+  .logo:hover .logo-mark{ transform: rotate(10deg) scale(1.08); }
   .nav-links{
     display:flex;
     align-items:center;
@@ -87,7 +99,17 @@
     align-items:center;
     gap: 4px;
     cursor:pointer;
+    position:relative;
   }
+  .nav-links li::after{
+    content:"";
+    position:absolute;
+    left:0; bottom:-6px;
+    width:0; height:2px;
+    background: var(--blue);
+    transition: width .3s ease;
+  }
+  .nav-links li:hover::after{ width:100%; }
   .nav-right{
     display:flex;
     align-items:center;
@@ -97,7 +119,9 @@
     width: 20px;height:20px;
     color:#23283a;
     cursor:pointer;
+    transition: transform .3s ease;
   }
+  .search-icon:hover{ transform: scale(1.15); }
   .login-btn{
     background: var(--blue);
     color:#fff;
@@ -110,7 +134,18 @@
     gap:8px;
     border:none;
     cursor:pointer;
+    white-space:nowrap;
   }
+  .menu-toggle{
+    display:none;
+    background:none;
+    border:none;
+    padding:4px;
+    cursor:pointer;
+    color: var(--navy);
+  }
+  .menu-toggle svg{width:24px;height:24px;}
+  .mobile-menu{display:none;}
 
   /* Hero */
   .hero{
@@ -118,7 +153,7 @@
     display:flex;
     background: linear-gradient(180deg, #dbe4f7 0%, #cddaf3 100%);
     overflow:hidden;
-    min-height: 380px;
+    min-height: 480px;
   }
   .hero-text{
     flex: 0 0 46%;
@@ -134,6 +169,9 @@
     font-weight: 800;
     color: var(--navy);
     margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: heroSlideUp .9s cubic-bezier(.22,1,.36,1) .15s forwards;
   }
   .hero-text p{
     font-size: 16px;
@@ -141,8 +179,19 @@
     max-width: 460px;
     margin-bottom: 30px;
     line-height: 1.5;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: heroSlideUp .9s cubic-bezier(.22,1,.36,1) .35s forwards;
   }
-  .hero-ctas{display:flex;align-items:center;gap:28px;}
+  .hero-ctas{
+    display:flex;align-items:center;gap:28px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: heroSlideUp .9s cubic-bezier(.22,1,.36,1) .55s forwards;
+  }
+  @keyframes heroSlideUp{
+    to{ opacity:1; transform:translateY(0); }
+  }
   .btn-primary{
     background: var(--blue);
     color:#fff;
@@ -152,6 +201,14 @@
     font-size: 15px;
     border:none;
     cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    transition: transform .25s ease, box-shadow .25s ease;
+    box-shadow: 0 4px 14px rgba(27,79,216,0.0);
+  }
+  .btn-primary:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(27,79,216,0.35);
   }
   .btn-link{
     color: var(--blue);
@@ -160,45 +217,76 @@
     display:flex;
     align-items:center;
     gap:6px;
+    transition: gap .25s ease, color .25s ease;
   }
+  .btn-link:hover{ gap:12px; color: var(--blue-dark); }
   .hero-image{
     flex: 1;
     position:relative;
-    background: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80') center/cover;
+    min-height: 480px;
+    background-image:
+      linear-gradient(120deg, rgba(9,20,50,0.55) 0%, rgba(14,35,80,0.25) 45%, rgba(20,50,100,0.15) 100%),
+      url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80');
+    background-size: 115% auto;
+    background-position: center 40%;
     overflow:hidden;
+    transform: scale(1.02);
+    animation: heroImgReveal 1.3s cubic-bezier(.22,1,.36,1) forwards;
   }
-  .hero-image::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background: linear-gradient(120deg, #0e2350 0%, #16305e 40%, #1c3d70 100%);
-  }
-  .building-graphic{
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
+  @keyframes heroImgReveal{
+    from{ clip-path: inset(0 0 0 100%); }
+    to{ clip-path: inset(0 0 0 0%); }
   }
   .hero-brand{
     position:absolute;
-    top: 45%;
+    top: 44%;
     left: 50%;
-    transform: translate(-50%,-50%) rotate(-4deg);
+    transform: translate(-50%,-50%) rotate(-3deg);
     color:#fff;
-    font-size: 28px;
+    font-size: 30px;
     font-weight:700;
     letter-spacing:1px;
-    opacity:0.9;
+    opacity:0;
     display:flex;
     align-items:baseline;
-    gap:8px;
+    gap:10px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+    animation: brandFade 1s ease 1s forwards;
+  }
+  @keyframes brandFade{
+    to{ opacity:0.92; }
+  }
+  .hero-brand svg{
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
   }
   .hero-brand .sub{
     font-size:12px;
     font-weight:400;
     letter-spacing:3px;
-    opacity:0.7;
+    opacity:0.75;
+  }
+  .hero-scroll-cue{
+    position:absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    font-size:11px;
+    letter-spacing:2px;
+    opacity:0.85;
+    z-index:3;
+    animation: bobCue 2.2s ease-in-out infinite;
+  }
+  .hero-scroll-cue svg{width:16px;height:16px;}
+  @keyframes bobCue{
+    0%,100%{ transform: translateX(-50%) translateY(0); }
+    50%{ transform: translateX(-50%) translateY(8px); }
   }
 
   /* Feature strip */
@@ -233,8 +321,14 @@
     align-items:center;
     justify-content:center;
     flex-shrink:0;
+    transition: transform .35s ease, background .35s ease;
   }
-  .feature-icon svg{width:20px;height:20px;stroke: var(--blue);}
+  .feature-item:hover .feature-icon{
+    transform: scale(1.12) rotate(-6deg);
+    background: var(--blue);
+  }
+  .feature-item:hover .feature-icon svg{ stroke:#fff; }
+  .feature-icon svg{width:20px;height:20px;stroke: var(--blue); transition: stroke .35s ease;}
   .feature-item h4{
     font-size: 15px;
     font-weight:700;
@@ -275,7 +369,9 @@
     display:flex;
     align-items:center;
     gap:6px;
+    transition: gap .25s ease;
   }
+  .view-all:hover{ gap:11px; }
   .product-grid{
     display:grid;
     grid-template-columns: repeat(4, 1fr);
@@ -286,6 +382,12 @@
     border-radius: 12px;
     padding: 24px 20px;
     border: 1px solid var(--border-light);
+    transition:transform .35s ease,box-shadow .35s ease,border-color .35s ease;
+  }
+  .product-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 16px 32px rgba(13,27,62,.12);
+    border-color: transparent;
   }
   .product-icon{
     width: 46px;
@@ -296,8 +398,14 @@
     align-items:center;
     justify-content:center;
     margin-bottom: 16px;
+    transition: transform .35s ease, background .35s ease;
   }
-  .product-icon svg{width:22px;height:22px;stroke:var(--blue);}
+  .product-card:hover .product-icon{
+    background: var(--blue);
+    transform: scale(1.1);
+  }
+  .product-card:hover .product-icon svg{ stroke:#fff; }
+  .product-icon svg{width:22px;height:22px;stroke:var(--blue); transition: stroke .35s ease;}
   .product-card h3{
     font-size: 16px;
     font-weight:700;
@@ -316,7 +424,9 @@
     display:flex;
     align-items:center;
     gap:6px;
+    transition: gap .25s ease;
   }
+  .product-card a:hover{ gap:11px; }
 
   /* Online banking card */
   .banking-col{
@@ -326,7 +436,9 @@
     padding: 30px 26px;
     color:#fff;
     align-self:stretch;
+    transition: box-shadow .4s ease;
   }
+  .banking-col:hover{ box-shadow: 0 20px 40px rgba(13,27,62,.3); }
   .banking-col h3{
     display:flex;
     align-items:center;
@@ -352,11 +464,16 @@
     width:100%;
     padding: 12px 14px 12px 40px;
     border-radius: 6px;
-    border:none;
+    border: 1px solid transparent;
     background: #16214a;
     color:#fff;
     font-size: 14px;
     outline:none;
+    transition: border-color .25s ease, background .25s ease;
+  }
+  .input-group input:focus{
+    border-color: var(--blue);
+    background: #182a5c;
   }
   .input-group input::placeholder{color:#8b96b8;}
   .input-group .eye{
@@ -384,6 +501,11 @@
     font-size: 15px;
     cursor:pointer;
     margin-bottom: 18px;
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .btn-login-full:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(27,79,216,.35);
   }
   .new-user{
     text-align:center;
@@ -401,6 +523,11 @@
     font-weight:700;
     font-size: 14px;
     cursor:pointer;
+    transition: background .25s ease, transform .25s ease;
+  }
+  .btn-register:hover{
+    background: rgba(255,255,255,0.08);
+    transform: translateY(-2px);
   }
 
   /* Footer trust bar */
@@ -421,60 +548,101 @@
   }
   .trust-bar svg{width:16px;height:16px;}
 
+  /* Scroll reveal (up & down) */
+  .reveal{
+    opacity:0;
+    transform: translateY(40px);
+    transition: opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1);
+  }
+  .reveal.reveal-visible{
+    opacity:1;
+    transform: translateY(0);
+  }
+  .reveal-left{ transform: translateX(-40px); }
+  .reveal-left.reveal-visible{ transform: translateX(0); }
+  .reveal-right{ transform: translateX(40px); }
+  .reveal-right.reveal-visible{ transform: translateX(0); }
+  .reveal-stagger > *{
+    opacity:0;
+    transform: translateY(30px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .reveal-stagger.reveal-visible > *{
+    opacity:1;
+    transform: translateY(0);
+  }
+  .reveal-stagger.reveal-visible > *:nth-child(1){ transition-delay: .05s; }
+  .reveal-stagger.reveal-visible > *:nth-child(2){ transition-delay: .15s; }
+  .reveal-stagger.reveal-visible > *:nth-child(3){ transition-delay: .25s; }
+  .reveal-stagger.reveal-visible > *:nth-child(4){ transition-delay: .35s; }
+
+  /* Tablet */
   @media (max-width: 1100px){
     .content-section{flex-direction:column;}
     .banking-col{flex:1;width:100%;}
     .product-grid{grid-template-columns: repeat(2,1fr);}
     .feature-strip{flex-wrap:wrap;}
-    .feature-item{flex:0 0 50%;border-right:none;margin-bottom:16px;}
+    .feature-item{flex:0 0 50%;border-right:none;padding:10px 20px;margin-bottom:10px;}
+    .nav-links{gap:20px;}
+    .hero-text h1{font-size:38px;}
   }
-  @media (max-width: 700px){
-    .hero{flex-direction:column;}
-    .hero-text{flex:1;padding: 40px 24px;}
-    .hero-text h1{font-size:32px;}
-    .hero-image{min-height:220px;}
-    .top-bar{padding:8px 20px;}
-    .main-nav{padding:14px 20px;flex-wrap:wrap;gap:12px;}
+  @media (max-width: 900px){
     .nav-links{display:none;}
-    .content-section{padding:40px 20px;}
-    .product-grid{grid-template-columns: 1fr;}
-    .trust-bar{gap:20px;justify-content:flex-start;}
+    .menu-toggle{display:block;}
+    .mobile-menu.open{
+      display:flex;
+      flex-direction:column;
+      background:#fff;
+      padding: 10px 20px 18px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      gap:0;
+    }
+    .mobile-menu.open li{
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size:15px;
+    }
+    .mobile-menu.open li:last-child{border-bottom:none;}
   }
+  /* Mobile */
+  @media (max-width: 700px){
+    .top-bar{padding:8px 16px;flex-wrap:wrap;gap:8px;}
+    .top-bar .top-left a{margin-right:16px;font-size:12px;}
+    .top-bar .top-right{gap:14px;flex-wrap:wrap;}
+    .top-bar .top-right span{font-size:12px;}
 
-html{scroll-behavior:smooth;}
-.hero,.feature-strip,.product-card,.banking-col,.trust-bar{
-animation:fadeUp .7s ease both;
-}
-.product-card{transition:transform .3s ease,box-shadow .3s ease;}
-.product-card:hover{transform:translateY(-6px);box-shadow:0 12px 24px rgba(0,0,0,.12);}
-.login-btn,.btn-primary,.btn-login-full,.btn-register{
-transition:transform .25s ease,opacity .25s ease;
-}
-.login-btn:hover,.btn-primary:hover,.btn-login-full:hover,.btn-register:hover{
-transform:translateY(-2px);
-}
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(24px);}
-to{opacity:1;transform:translateY(0);}
-}
+    .main-nav{padding:12px 16px;}
+    .logo{font-size:18px;}
+    .logo-mark{width:28px;height:28px;}
+    .login-btn{padding:8px 14px;font-size:13px;}
+    .login-btn span{display:none;}
 
+    .hero{flex-direction:column;min-height:auto;}
+    .hero-text{flex:1;padding: 32px 20px 24px;order:1;}
+    .hero-text h1{font-size:28px;}
+    .hero-text p{font-size:14px;}
+    .hero-ctas{flex-wrap:wrap;gap:16px;}
+    .btn-primary{width:100%;text-align:center;padding:14px;}
+    .btn-link{width:100%;justify-content:center;}
+    .hero-image{min-height:220px;order:2;}
+    .hero-brand{font-size:20px;}
+    .hero-brand svg{width:24px;height:24px;}
+    .hero-scroll-cue{display:none;}
 
-@media (max-width:700px){
-.top-bar{display:block;padding:10px 16px;}
-.top-bar .top-left,.top-bar .top-right{display:flex;flex-wrap:wrap;gap:10px;}
-.main-nav{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;}
-.nav-right{width:100%;justify-content:flex-end;}
-.login-btn{width:100%;justify-content:center;margin-top:10px;}
-.hero-text,.content-section{padding-left:16px;padding-right:16px;}
-.hero-ctas{flex-direction:column;align-items:stretch;}
-.btn-primary,.btn-link{width:100%;text-align:center;justify-content:center;}
-.feature-strip{display:block;}
-.feature-item{width:100%;padding:14px 0;border-bottom:1px solid var(--border-light);}
-.feature-item:last-child{border-bottom:none;}
-.products-header{flex-direction:column;align-items:flex-start;gap:10px;}
-.banking-col{width:100%;}
-}
+    .feature-strip-wrap{padding:0 16px;margin-top:-24px;}
+    .feature-strip{border-radius:10px;padding:16px 8px;}
+    .feature-item{flex:0 0 100%;padding:10px 12px;}
 
+    .content-section{padding:32px 16px 50px;gap:20px;}
+    .products-header h2{font-size:20px;}
+    .product-grid{grid-template-columns: 1fr;gap:14px;}
+    .banking-col{padding:24px 20px;}
+
+    .trust-bar{gap:16px;flex-direction:column;align-items:flex-start;padding:20px 16px;}
+  }
+  @media (max-width: 380px){
+    .hero-text h1{font-size:24px;}
+  }
 </style>
 </head>
 <body>
@@ -504,7 +672,7 @@ to{opacity:1;transform:translateY(0);}
   </div>
 
   <!-- Main nav -->
-  <nav class="main-nav">
+  <nav class="main-nav" id="mainNav">
     <div class="logo">
       <svg class="logo-mark" viewBox="0 0 40 40" fill="none">
         <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="#1b4fd8"/>
@@ -524,10 +692,21 @@ to{opacity:1;transform:translateY(0);}
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <button class="login-btn" onclick="document.querySelector('.banking-col').scrollIntoView({behavior:'smooth'});">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-        Login
+        <span>Login</span>
+      </button>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
     </div>
   </nav>
+  <ul class="nav-links mobile-menu" id="mobileMenu">
+    <li>Accounts ▾</li>
+    <li>Loans ▾</li>
+    <li>Cards ▾</li>
+    <li>Investments ▾</li>
+    <li>Digital Banking ▾</li>
+    <li>More ▾</li>
+  </ul>
 
   <!-- Hero -->
   <section class="hero">
@@ -539,20 +718,27 @@ to{opacity:1;transform:translateY(0);}
         <a href="#" class="btn-link">Learn More →</a>
       </div>
     </div>
-    <div class="hero-image">
+    <div class="hero-image" id="heroImage">
       <div class="hero-brand">
-        <span>P</span>
+        <svg viewBox="0 0 40 40" fill="none">
+          <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="#ffffff"/>
+          <polygon points="20,9 29,14.5 29,25.5 20,31 11,25.5 11,14.5" fill="#0d1b3e"/>
+        </svg>
         <div>
           POHOLING<br>
           <span class="sub">PLC</span>
         </div>
+      </div>
+      <div class="hero-scroll-cue">
+        <span>SCROLL</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
       </div>
     </div>
   </section>
 
   <!-- Feature strip -->
   <div class="feature-strip-wrap">
-    <div class="feature-strip">
+    <div class="feature-strip reveal-stagger reveal">
       <div class="feature-item">
         <div class="feature-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
@@ -595,11 +781,11 @@ to{opacity:1;transform:translateY(0);}
   <!-- Content -->
   <section class="content-section">
     <div class="products-col">
-      <div class="products-header">
+      <div class="products-header reveal">
         <h2>Banking Solutions for You</h2>
         <a href="#" class="view-all">View All Products →</a>
       </div>
-      <div class="product-grid">
+      <div class="product-grid reveal-stagger reveal">
         <div class="product-card">
           <div class="product-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2H10a2 2 0 0 0-2 2v2"/></svg>
@@ -635,7 +821,7 @@ to{opacity:1;transform:translateY(0);}
       </div>
     </div>
 
-    <div class="banking-col">
+    <div class="banking-col reveal reveal-right">
       <h3>
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
         Online Banking
@@ -660,7 +846,7 @@ to{opacity:1;transform:translateY(0);}
   </section>
 
   <!-- Trust bar -->
-  <div class="trust-bar">
+  <div class="trust-bar reveal-stagger reveal">
     <span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
       Your security is our priority
@@ -679,7 +865,6 @@ to{opacity:1;transform:translateY(0);}
     </span>
   </div>
 
-
 <script>
 function login(){
  const username=document.querySelector('.banking-col input[type="text"]').value.trim();
@@ -687,6 +872,49 @@ function login(){
  if(username===""||password===""){alert("Please enter your username and password.");return;}
  alert("Login successful!");
 }
+
+// Mobile menu toggle
+const menuToggle = document.getElementById('menuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+menuToggle.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+});
+
+// Sticky nav shadow on scroll
+const mainNav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 10) mainNav.classList.add('scrolled');
+  else mainNav.classList.remove('scrolled');
+});
+
+// Hero parallax: image shifts and text fades as you scroll away from top
+const heroImage = document.getElementById('heroImage');
+const heroTextEl = document.querySelector('.hero-text');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  const heroHeight = document.querySelector('.hero').offsetHeight;
+  const progress = Math.min(y / heroHeight, 1);
+
+  heroImage.style.backgroundPosition = `center ${40 + progress * 20}%`;
+  heroImage.style.transform = `scale(${1.02 + progress * 0.06})`;
+
+  heroTextEl.style.transform = `translateY(${progress * 40}px)`;
+  heroTextEl.style.opacity = `${1 - progress * 0.9}`;
+}, { passive: true });
+
+// Scroll reveal — animates in on the way down AND on the way back up
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('reveal-visible');
+    } else {
+      entry.target.classList.remove('reveal-visible');
+    }
+  });
+}, { threshold: 0.15 });
+
+revealEls.forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
