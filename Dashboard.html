@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poholing PLC | Client Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1F3A;
+    --ink-soft:#152B4D;
+    --slate:#5B6B85;
+    --slate-light:#8993A8;
+    --emerald:#1F7A5C;
+    --emerald-soft:#E6F2ED;
+    --gold:#B4901F;
+    --gold-soft:#F7F1DF;
+    --bg:#F5F6F8;
+    --card:#FFFFFF;
+    --line:#E7E9EE;
+    --red:#B3413A;
+    --red-soft:#FBEAE8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'JetBrains Mono',monospace; font-variant-numeric: tabular-nums;}
+  .serif{font-family:'Source Serif 4',serif;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;}
+  button{font-family:inherit;cursor:pointer;}
+
+  .app{
+    display:grid;
+    grid-template-columns: 260px 1fr;
+    min-height:100vh;
+  }
+
+  /* Sidebar */
+  .sidebar{
+    background:var(--ink);
+    color:#C9D3E5;
+    padding:28px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#fff;
+    padding:6px 10px 28px;
+  }
+  .brand-mark{width:30px;height:30px;flex-shrink:0;}
+  .brand-name{font-family:'Source Serif 4',serif; font-weight:600; font-size:18px; letter-spacing:.3px;}
+  .brand-tag{font-size:9px; letter-spacing:2px; color:#8593B0; font-weight:600; display:block; margin-top:1px;}
+
+  .nav-group-label{
+    font-size:10px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:#5E6C8C;
+    font-weight:600;
+    padding:18px 10px 8px;
+  }
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 10px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:500;
+    color:#C9D3E5;
+    transition:background .2s ease, color .2s ease;
+  }
+  .nav-item svg{width:17px;height:17px;stroke:#8593B0; flex-shrink:0; transition:stroke .2s ease;}
+  .nav-item:hover{background:#152B4D; color:#fff;}
+  .nav-item:hover svg{stroke:#fff;}
+  .nav-item.active{background:var(--emerald); color:#fff;}
+  .nav-item.active svg{stroke:#fff;}
+
+  .sidebar-footer{
+    margin-top:auto;
+    padding-top:20px;
+    border-top:1px solid #21335A;
+    font-size:12px;
+    color:#5E6C8C;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .avatar-dot{
+    width:34px;height:34px;border-radius:50%;
+    background:var(--emerald);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:600;font-size:13px;
+    flex-shrink:0;
+  }
+  .sidebar-footer div span{display:block;color:#C9D3E5;font-weight:600;font-size:13px;}
+
+  /* Main */
+  .main{padding:32px 40px 60px;}
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:28px;
+  }
+  .topbar h1{font-family:'Source Serif 4',serif; font-size:26px; font-weight:600;}
+  .topbar .sub{font-size:13px; color:var(--slate); margin-top:4px;}
+  .topbar-actions{display:flex;gap:12px;align-items:center;}
+  .icon-btn{
+    width:38px;height:38px;border-radius:9px;
+    background:var(--card); border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .icon-btn svg{width:17px;height:17px;stroke:var(--slate);}
+
+  /* Balance cards row */
+  .balance-row{
+    display:grid;
+    grid-template-columns: 1.3fr 1fr 1fr;
+    gap:18px;
+    margin-bottom:22px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 24px;
+  }
+  .primary-balance{
+    background: linear-gradient(135deg, var(--ink) 0%, #1A3563 100%);
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+  }
+  .primary-balance::after{
+    content:"";
+    position:absolute;
+    right:-40px; top:-60px;
+    width:200px;height:200px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(31,122,92,0.35) 0%, transparent 70%);
+  }
+  .primary-balance .label{font-size:12px; color:#9FB0CC; letter-spacing:.5px; margin-bottom:10px;}
+  .primary-balance .amount{font-size:38px; font-weight:600; letter-spacing:-.5px;}
+  .primary-balance .amount .cents{font-size:20px; color:#9FB0CC;}
+  .primary-balance .meta{
+    display:flex; gap:18px; margin-top:18px; font-size:12px; color:#B9C6DE;
+    position:relative; z-index:1;
+  }
+  .primary-balance .meta b{color:#fff; font-weight:600;}
+  .acct-name{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.12);
+    font-size:12px; color:#9FB0CC; position:relative; z-index:1;
+  }
+  .acct-name b{color:#fff;}
+
+  .mini-card .label{font-size:12px;color:var(--slate);margin-bottom:8px;}
+  .mini-card .amount{font-size:24px;font-weight:600;}
+  .mini-card .delta{
+    display:inline-flex; align-items:center; gap:4px;
+    font-size:12px; font-weight:600; margin-top:8px;
+    padding:3px 8px; border-radius:20px;
+  }
+  .delta.up{background:var(--emerald-soft); color:var(--emerald);}
+  .delta.down{background:var(--red-soft); color:var(--red);}
+  .sparkline{margin-top:12px;height:36px;}
+
+  /* Content grid */
+  .grid-2{
+    display:grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap:20px;
+    align-items:start;
+  }
+  .section-title{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:16px;
+  }
+  .section-title h2{font-family:'Source Serif 4',serif; font-size:18px; font-weight:600;}
+  .section-title a{font-size:12px; font-weight:600; color:var(--emerald);}
+
+  /* Transactions */
+  .tx-row{
+    display:flex; align-items:center; gap:14px;
+    padding:13px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .tx-row:last-child{border-bottom:none;}
+  .tx-icon{
+    width:38px;height:38px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .tx-icon svg{width:17px;height:17px;}
+  .tx-icon.out{background:var(--red-soft);}
+  .tx-icon.out svg{stroke:var(--red);}
+  .tx-icon.in{background:var(--emerald-soft);}
+  .tx-icon.in svg{stroke:var(--emerald);}
+  .tx-info{flex:1;}
+  .tx-info .name{font-size:14px;font-weight:600;}
+  .tx-info .meta{font-size:12px;color:var(--slate);margin-top:2px;}
+  .tx-amount{font-size:14px;font-weight:600;}
+  .tx-amount.out{color:var(--red);}
+  .tx-amount.in{color:var(--emerald);}
+
+  /* Investments */
+  .invest-item{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 0; border-bottom:1px solid var(--line);
+  }
+  .invest-item:last-child{border-bottom:none;}
+  .invest-name{font-size:14px;font-weight:600;}
+  .invest-sub{font-size:11px;color:var(--slate);margin-top:2px;}
+  .invest-val{text-align:right;}
+  .invest-val .v{font-size:14px;font-weight:600;}
+  .invest-val .p{font-size:11px;margin-top:2px;font-weight:600;}
+  .invest-total{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding-top:14px; margin-top:6px; border-top:2px solid var(--ink);
+  }
+  .invest-total .v{font-size:22px;font-weight:600;}
+
+  /* Transfer panel */
+  .transfer-card{margin-top:20px;}
+  .field-label{font-size:12px;font-weight:600;color:var(--slate);margin-bottom:6px;display:block;}
+  .field-row{margin-bottom:16px;}
+  select, input[type=text], input[type=number]{
+    width:100%;
+    padding:11px 13px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-size:14px;
+    font-family:inherit;
+    background:#FBFCFD;
+    color:var(--ink);
+    outline:none;
+  }
+  select:focus, input:focus{border-color:var(--emerald);}
+  .amount-input-wrap{position:relative;}
+  .amount-input-wrap span{
+    position:absolute;left:13px;top:50%;transform:translateY(-50%);
+    font-size:14px;color:var(--slate);font-weight:600;
+  }
+  .amount-input-wrap input{padding-left:32px; font-family:'JetBrains Mono',monospace; font-weight:600;}
+
+  .fee-breakdown{
+    background:#FBFCFD;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    margin:16px 0;
+    font-size:13px;
+  }
+  .fee-row{display:flex;justify-content:space-between;padding:5px 0;color:var(--slate);}
+  .fee-row.total{
+    border-top:1px solid var(--line);
+    margin-top:6px; padding-top:10px;
+    font-weight:700; color:var(--ink);
+    font-size:14px;
+  }
+  .fee-note{font-size:11px;color:var(--slate-light);margin-top:8px;line-height:1.5;}
+
+  .btn-primary{
+    width:100%;
+    background:var(--emerald);
+    color:#fff;
+    border:none;
+    padding:13px;
+    border-radius:8px;
+    font-weight:700;
+    font-size:14px;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .btn-primary:hover{background:#186349; transform:translateY(-1px);}
+
+  .status-banner{
+    display:flex; gap:12px; align-items:flex-start;
+    background:var(--gold-soft);
+    border:1px solid #E9D9A8;
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:18px;
+    font-size:13px;
+  }
+  .status-banner svg{width:18px;height:18px;stroke:var(--gold);flex-shrink:0;margin-top:1px;}
+  .status-banner b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px;}
+  .status-banner p{color:var(--slate);line-height:1.5;}
+
+  @media (max-width: 1000px){
+    .app{grid-template-columns:1fr;}
+    .sidebar{display:none;}
+    .balance-row{grid-template-columns:1fr;}
+    .grid-2{grid-template-columns:1fr;}
+    .main{padding:20px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" fill="none">
+        <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="#1F7A5C"/>
+        <polygon points="20,9 29,14.5 29,25.5 20,31 11,25.5 11,14.5" fill="#0B1F3A"/>
+      </svg>
+      <div>
+        <div class="brand-name">Poholing</div>
+        <span class="brand-tag">PLC · PRIVATE CLIENT</span>
+      </div>
+    </div>
+
+    <div class="nav-group-label">Overview</div>
+    <div class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Accounts
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="17" y1="1" x2="7" y2="23"/><path d="M12 3v4M12 17v4"/><path d="M4 8h16M4 16h16"/></svg>
+      Transfers
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg>
+      Investments
+    </div>
+
+    <div class="nav-group-label">Manage</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      Cards
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="avatar-dot">LB</div>
+      <div>
+        <span>Louis Briggs</span>
+        Client ID · PB-30841
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>Good afternoon, Louis</h1>
+        <div class="sub">Monday, 7 July 2026 · Last login: today at 06:12</div>
+      </div>
+      <div class="topbar-actions">
+        <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+        <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+      </div>
+    </div>
+
+    <!-- Balance row -->
+    <div class="balance-row">
+      <div class="card primary-balance">
+        <div class="label">TOTAL AVAILABLE BALANCE</div>
+        <div class="amount">$<span id="bal-int">128,430</span><span class="cents">.72</span></div>
+        <div class="meta">
+          <span>Current: <b>$96,210.40</b></span>
+          <span>Savings: <b>$32,220.32</b></span>
+        </div>
+        <div class="acct-name">
+          <span>Account holder</span>
+          <b>Louis Briggs</b>
+        </div>
+      </div>
+      <div class="card mini-card">
+        <div class="label">Income (30 days)</div>
+        <div class="amount mono">$14,880.00</div>
+        <span class="delta up">↑ 6.2% vs last month</span>
+      </div>
+      <div class="card mini-card">
+        <div class="label">Spending (30 days)</div>
+        <div class="amount mono">$6,342.18</div>
+        <span class="delta down">↓ 3.1% vs last month</span>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid-2">
+      <div>
+        <!-- Transactions -->
+        <div class="card">
+          <div class="section-title">
+            <h2>Recent Transactions</h2>
+            <a href="#">View all →</a>
+          </div>
+
+          <div class="tx-row">
+            <div class="tx-icon in"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
+            <div class="tx-info">
+              <div class="name">Salary — Clearwater Holdings Ltd</div>
+              <div class="meta">6 Jul 2026 · Direct deposit</div>
+            </div>
+            <div class="tx-amount in">+$8,400.00</div>
+          </div>
+          <div class="tx-row">
+            <div class="tx-icon out"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div>
+            <div class="tx-info">
+              <div class="name">Mortgage payment — Home Loan #4471</div>
+              <div class="meta">5 Jul 2026 · Scheduled transfer</div>
+            </div>
+            <div class="tx-amount out">-$2,150.00</div>
+          </div>
+          <div class="tx-row">
+            <div class="tx-icon out"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+            <div class="tx-info">
+              <div class="name">Card purchase — Halden &amp; Co. Interiors</div>
+              <div class="meta">4 Jul 2026 · Debit card ····4471</div>
+            </div>
+            <div class="tx-amount out">-$643.29</div>
+          </div>
+          <div class="tx-row">
+            <div class="tx-icon in"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg></div>
+            <div class="tx-info">
+              <div class="name">Dividend — Meridian Growth Fund</div>
+              <div class="meta">2 Jul 2026 · Investment income</div>
+            </div>
+            <div class="tx-amount in">+$312.60</div>
+          </div>
+          <div class="tx-row">
+            <div class="tx-icon out"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+            <div class="tx-info">
+              <div class="name">Card purchase — Norrland Grocers</div>
+              <div class="meta">1 Jul 2026 · Debit card ····4471</div>
+            </div>
+            <div class="tx-amount out">-$118.44</div>
+          </div>
+        </div>
+
+        <!-- Investments -->
+        <div class="card" style="margin-top:20px;">
+          <div class="section-title">
+            <h2>Investment Portfolio</h2>
+            <a href="#">Manage →</a>
+          </div>
+          <div class="invest-item">
+            <div>
+              <div class="invest-name">Meridian Growth Fund</div>
+              <div class="invest-sub">Equity · Moderate risk</div>
+            </div>
+            <div class="invest-val">
+              <div class="v mono">$41,220.00</div>
+              <div class="p" style="color:var(--emerald);">+8.4% YTD</div>
+            </div>
+          </div>
+          <div class="invest-item">
+            <div>
+              <div class="invest-name">Sovereign Bond Ladder</div>
+              <div class="invest-sub">Fixed income · Low risk</div>
+            </div>
+            <div class="invest-val">
+              <div class="v mono">$18,905.00</div>
+              <div class="p" style="color:var(--emerald);">+3.1% YTD</div>
+            </div>
+          </div>
+          <div class="invest-item">
+            <div>
+              <div class="invest-name">Global Property Trust</div>
+              <div class="invest-sub">Real assets · Moderate risk</div>
+            </div>
+            <div class="invest-val">
+              <div class="v mono">$9,540.00</div>
+              <div class="p" style="color:var(--red);">-1.2% YTD</div>
+            </div>
+          </div>
+          <div class="invest-total">
+            <span class="serif" style="font-size:14px;color:var(--slate);">Total portfolio value</span>
+            <span class="v mono">$69,665.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transfer panel -->
+      <div>
+        <div class="card">
+          <div class="section-title"><h2>Send a Transfer</h2></div>
+
+          <div class="field-row">
+            <label class="field-label">From account</label>
+            <select>
+              <option>Current Account ···· 4471 — $96,210.40</option>
+              <option>Savings Account ···· 2290 — $32,220.32</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">Transfer type</label>
+            <select id="transferType" onchange="updateFees()">
+              <option value="domestic">Domestic transfer</option>
+              <option value="international">International wire</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">Beneficiary name</label>
+            <input type="text" placeholder="e.g. Jordan Whitaker">
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">Amount</label>
+            <div class="amount-input-wrap">
+              <span>$</span>
+              <input type="number" id="amountInput" placeholder="0.00" oninput="updateFees()">
+            </div>
+          </div>
+
+          <div class="fee-breakdown">
+            <div class="fee-row"><span>Transfer amount</span><span class="mono" id="feeAmount">$0.00</span></div>
+            <div class="fee-row"><span id="feeLabel">Domestic transfer fee</span><span class="mono" id="feeCost">$0.00</span></div>
+            <div class="fee-row total"><span>Total debited today</span><span class="mono" id="feeTotal">$0.00</span></div>
+            <div class="fee-note" id="feeNote">Domestic transfers are typically free and complete same-day. The fee shown, if any, is deducted from this account automatically — nothing further is required from you.</div>
+          </div>
+
+          <button class="btn-primary" onclick="sendTransfer()">Review &amp; Confirm Transfer</button>
+        </div>
+
+        <div class="card transfer-card">
+          <div class="status-banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></svg>
+            <div>
+              <b>How our transfer fees work</b>
+              <p>Any applicable fee is disclosed before you confirm and is deducted directly from your account balance. Poholing PLC will never ask you to pay a separate fee to "release," "clear," or "unlock" a transfer.</p>
+            </div>
+          </div>
+          <div class="section-title" style="margin-bottom:10px;"><h2 style="font-size:15px;">Last Transfer Status</h2></div>
+          <div style="font-size:13px;color:var(--slate);line-height:1.6;">
+            <b style="color:var(--ink);">Completed</b> — $1,200.00 to Jordan Whitaker (domestic), 3 Jul 2026. No fee applied.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function updateFees(){
+  const type = document.getElementById('transferType').value;
+  const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+  let fee = 0, label = '', note = '';
+
+  if(type === 'domestic'){
+    fee = 0;
+    label = 'Domestic transfer fee';
+    note = 'Domestic transfers are free and complete same-day. Nothing further is required from you.';
+  } else {
+    fee = 25; // flat, transparent, disclosed wire fee — deducted from balance, not paid separately
+    label = 'International wire fee (flat, deducted from balance)';
+    note = 'This $25.00 wire fee is deducted from your account along with the transfer — it is not a separate payment. Wires typically settle in 1–3 business days.';
+  }
+
+  document.getElementById('feeAmount').textContent = '$' + amount.toFixed(2);
+  document.getElementById('feeCost').textContent = '$' + fee.toFixed(2);
+  document.getElementById('feeTotal').textContent = '$' + (amount + fee).toFixed(2);
+  document.getElementById('feeLabel').textContent = label;
+  document.getElementById('feeNote').textContent = note;
+}
+updateFees();
+
+function sendTransfer(){
+  const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+  if(amount <= 0){ alert('Enter an amount to transfer.'); return; }
+  alert('Transfer submitted for review. You will receive a confirmation once it has been processed — no further payment is needed from you.');
+}
+
+// Count-up animation for hero balance
+(function(){
+  const el = document.getElementById('bal-int');
+  const target = 128430;
+  let cur = 0;
+  const step = target / 40;
+  const t = setInterval(()=>{
+    cur += step;
+    if(cur >= target){ cur = target; clearInterval(t); }
+    el.textContent = Math.floor(cur).toLocaleString('en-US');
+  }, 16);
+})();
+</script>
+</body>
+</html>
